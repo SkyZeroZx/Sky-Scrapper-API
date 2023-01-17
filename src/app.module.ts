@@ -48,6 +48,9 @@ import { join } from 'path';
       serveRoot: `/${process.env.STATIC_SERVER_PATH}`,
       serveStaticOptions: {
         cacheControl: true,
+        setHeaders: (res, path, stat) => {
+          res.header('Cross-Origin-Resource-Policy', 'cross-origin');
+        },
       },
     }),
     CommunitasModule,

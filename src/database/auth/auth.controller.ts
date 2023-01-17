@@ -47,6 +47,11 @@ export class AuthController {
     );
   }
 
+  @Post('forgot-password/:email')
+  forgotPassword(@Param('email') email: string) {
+    return this.authService.resetUser(email);
+  }
+
   @Post('change-password')
   changePassword(@User() user: UserEntity, @Body() changePasswordDto: ChangePasswordDto) {
     return this.authService.changePassword(user, changePasswordDto);
@@ -55,10 +60,5 @@ export class AuthController {
   @Post('sign-in')
   signIn(@Body() createUserDto: CreateUserDto) {
     return this.authService.signIn(createUserDto);
-  }
-
-  @Get(':email')
-  async resetUser(@Param('email') email: string) {
-    return this.authService.resetUser(email);
   }
 }

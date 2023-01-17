@@ -49,7 +49,7 @@ export class CommunitasService {
           category: z.querySelector(`${parent} .category_name`)?.textContent,
           image: z.querySelector(`${parent} a.product_img_link > img`)?.['src'],
           linkProduct: z.querySelector(`${parent} .product_img_link`)?.['href'],
-          shop: SHOPS.COMMUNITAS,
+          shop: 'Communitas',
           isAvailable:
             z.querySelector(`${parent} .exclusive`)?.textContent === 'Agregar' ? true : false,
           isbn: z
@@ -106,8 +106,8 @@ export class CommunitasService {
       for (const book of listBooks) {
         listCreateNewBook.push(this.bookService.createNewBookService(book));
       }
-      const result = Promise.all(listCreateNewBook);
-      this.logger.log({ message: 'Register Data Of Communitas', data: result });
+      await Promise.all(listCreateNewBook);
+      this.logger.log({ message: 'Register Data Of Communitas', data: listBooks });
     } catch (error) {
       this.logger.error('Error registering data');
       this.logger.error(error);

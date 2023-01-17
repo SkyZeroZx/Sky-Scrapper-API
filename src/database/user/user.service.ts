@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -26,7 +27,7 @@ export class UserService {
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<Response> {
-    this.logger.log({ message: 'Creating user', info : createUserDto });
+    this.logger.log({ message: 'Creating user', info: createUserDto });
 
     const existUser = await this.getUserByEmail(createUserDto.email);
     if (existUser) {
@@ -146,9 +147,13 @@ export class UserService {
   }
 
   async resetUser(email: string): Promise<Response> {
-    try {
-      const user = await this.getUserByEmail(email);
+    const user = await this.getUserByEmail(email);
 
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    try {
       const generatePassword = generate({
         length: 10,
         numbers: true,
@@ -193,7 +198,11 @@ export class UserService {
         },
       );
 
-      return { message: MSG_OK, info: 'User Photo Update successfully' };
+      return {
+        message: MSG_OK,
+        info: 'User Photo Update successfully',
+        data: `${process.env.STATIC_SERVER_PATH}/${fileName}`,
+      };
     } catch (error) {
       this.logger.error({ message: 'Error in updating user', error });
       throw new InternalServerErrorException('Sucedio un error al actualizar al usuario');

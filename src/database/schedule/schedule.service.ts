@@ -50,13 +50,13 @@ export class ScheduleService implements OnModuleInit {
     }
   }
 
-  async getIbero(){
-   return await this.iberoService.getDataViaPuppeteer()
+  async registerDataOfVyDdistribuidores() {
+    return await this.vyddistribuidoresService.scrapperVyddistribuidores();
   }
-
 
   initCronJobs() {
     this.registerJobNotifications();
+    this.registerCronCommunitas();
     this.registerCronCrisol();
     this.registerCronIbero();
     this.registerCronJobVyddistribuidores();
@@ -75,8 +75,9 @@ export class ScheduleService implements OnModuleInit {
   async registerHistoryPrice() {
     const hourRegisterPrice = parseInt(this.initHour) + 5;
     const jobHistoryPrice = new CronJob(`00 ${hourRegisterPrice} * * *`, async () => {
-      this.logger.log('Init history price job')
+      this.logger.log('Init history price job');
       await this.historyPriceService.registerMinorPriceByIsbn();
+      this.logger.log('Finalized history price job');
     });
     this.schedulerRegistry.addCronJob(HistoryPriceService.name, jobHistoryPrice);
     jobHistoryPrice.start();
@@ -99,7 +100,7 @@ export class ScheduleService implements OnModuleInit {
     const jobCrisol = new CronJob(`${this.initMinute} ${initHour} * * *`, async () => {
       this.logger.log('Init Crisol Job');
       await this.crisolService.scrapperCrisol();
-      this.logger.log('Finalized crisol Job');
+      this.logger.log('Finalized Crisol Job');
     });
     this.schedulerRegistry.addCronJob(CrisolService.name, jobCrisol);
     jobCrisol.start();
@@ -110,6 +111,7 @@ export class ScheduleService implements OnModuleInit {
     const jobIbero = new CronJob(`${this.initMinute} ${initHour} * * *`, async () => {
       this.logger.log('Init Ibero Job');
       await this.iberoService.scrapperIbero();
+      this.logger.log('Finalized Ibero Job');
     });
     this.schedulerRegistry.addCronJob(IberoService.name, jobIbero);
     jobIbero.start();
@@ -120,6 +122,7 @@ export class ScheduleService implements OnModuleInit {
     const jobVyddistribuidores = new CronJob(`${this.initMinute} ${initHour} * * *`, async () => {
       this.logger.log('Init Vyddistribuidores Job');
       await this.vyddistribuidoresService.scrapperVyddistribuidores();
+      this.logger.log('Finalized Vyddistribuidores');
     });
     this.schedulerRegistry.addCronJob(VyddistribuidoresService.name, jobVyddistribuidores);
     jobVyddistribuidores.start();
@@ -128,7 +131,9 @@ export class ScheduleService implements OnModuleInit {
   registerCronCommunitas() {
     const initHour = parseInt(this.initHour) + 3;
     const jobCommunitas = new CronJob(`${this.initMinute} ${initHour} * * *`, async () => {
+      this.logger.log('Init Communitas Job');
       await this.communitasService.scrapperCommunitas();
+      this.logger.log('Finalized Communitas Job');
     });
     this.schedulerRegistry.addCronJob(CommunitasService.name, jobCommunitas);
     jobCommunitas.start();
@@ -139,6 +144,7 @@ export class ScheduleService implements OnModuleInit {
     const jobCleanPriceNull = new CronJob(`${this.initMinute} ${initHour} * * *`, async () => {
       this.logger.log('Init Clean Price Null Job');
       await this.bookDetailService.clearPriceNull();
+      this.logger.log('Finalized Clean Price Null Job');
     });
     this.schedulerRegistry.addCronJob('clean-price-null', jobCleanPriceNull);
     jobCleanPriceNull.start();

@@ -7,6 +7,6 @@ export class ScheduleController {
 
   @Get()
   getSchedule() {
-    return this.scheduleService.getIbero();
+    return this.scheduleService.registerDataOfVyDdistribuidores();
   }
 }
