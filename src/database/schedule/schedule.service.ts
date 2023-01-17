@@ -50,13 +50,13 @@ export class ScheduleService implements OnModuleInit {
     }
   }
 
-  async registerDataOfVyDdistribuidores() {
-    return await this.vyddistribuidoresService.scrapperVyddistribuidores();
+  async scrapperCommunitas() {
+    return await this.communitasService.scrapperCommunitas();
   }
 
   initCronJobs() {
     this.registerJobNotifications();
-    this.registerCronCommunitas();
+    //   this.registerCronCommunitas();
     this.registerCronCrisol();
     this.registerCronIbero();
     this.registerCronJobVyddistribuidores();

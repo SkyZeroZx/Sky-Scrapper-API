@@ -7,6 +7,6 @@ export class ScheduleController {
 
   @Get()
   getSchedule() {
-    return this.scheduleService.registerDataOfVyDdistribuidores();
+    return this.scheduleService.scrapperCommunitas();
   }
 }
