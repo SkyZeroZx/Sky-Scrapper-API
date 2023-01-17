@@ -48,7 +48,7 @@ import { join } from 'path';
       serveRoot: `/${process.env.STATIC_SERVER_PATH}`,
       serveStaticOptions: {
         cacheControl: true,
-        setHeaders: (res, path, stat) => {
+        setHeaders: (res) => {
           res.header('Cross-Origin-Resource-Policy', 'cross-origin');
         },
       },

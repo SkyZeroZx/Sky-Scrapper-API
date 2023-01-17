@@ -51,7 +51,8 @@ export class ScheduleService implements OnModuleInit {
   }
 
   async scrapperCommunitas() {
-    return await this.communitasService.scrapperCommunitas();
+    const listIsbnVariation = await this.historyPriceService.getVariationPriceIsbn();
+    return listIsbnVariation;
   }
 
   initCronJobs() {

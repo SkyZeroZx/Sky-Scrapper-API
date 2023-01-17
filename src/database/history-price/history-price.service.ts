@@ -47,7 +47,6 @@ export class HistoryPriceService {
 
   async getVariationPriceIsbn(): Promise<string[]> {
     const currentDate = new Date();
-
     const listVariationPrice = await this.historyPriceModel.aggregate([
       {
         $match: {
@@ -55,9 +54,13 @@ export class HistoryPriceService {
             $gte: new Date(
               currentDate.getFullYear(),
               currentDate.getMonth(),
-              currentDate.getDate() - 4,
+              currentDate.getDate() - 1,
             ),
-            $lt: currentDate,
+            $lt: new Date(
+              currentDate.getFullYear(),
+              currentDate.getMonth(),
+              currentDate.getDate() + 1,
+            ),
           },
         },
       },
