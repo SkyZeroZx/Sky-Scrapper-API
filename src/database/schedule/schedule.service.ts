@@ -6,6 +6,7 @@ import {
   NOTIFICATION_LIST_WISH,
   SCRAPPER_INIT,
   SCRAPPER_HOUR_NOTIFICATION,
+  SCRAPPER_MINUTE_INIT,
 } from '@core/constants';
 import { NotificationService } from '../notification/notification.service';
 import { ListWishService } from '../list-wish/list-wish.service';
@@ -22,6 +23,7 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class ScheduleService implements OnModuleInit {
   private readonly initHour = this.configService.get(SCRAPPER_HOUR_INIT);
+  private readonly initMinute = this.configService.get(SCRAPPER_MINUTE_INIT);
   private readonly isProduction = this.configService.get(SCRAPPER_INIT);
   private readonly notificationHour = this.configService.get(SCRAPPER_HOUR_NOTIFICATION);
 
@@ -58,16 +60,17 @@ export class ScheduleService implements OnModuleInit {
   }
 
   registerJobNotifications() {
-    const registerSyncJob = new CronJob(`10 ${this.notificationHour} * * *`, () => {
-      this.priceVariance();
+    const registerSyncJob = new CronJob(`10 ${this.notificationHour} * * *`, async () => {
+      await this.priceVariance();
     });
     this.schedulerRegistry.addCronJob('remeberNotification', registerSyncJob);
     registerSyncJob.start();
   }
 
   async registerHistoryPrice() {
-    const hourRegisterPrice = parseInt(this.initHour);
+    const hourRegisterPrice = parseInt(this.initHour) + 5;
     const jobHistoryPrice = new CronJob(`00 ${hourRegisterPrice} * * *`, async () => {
+      this.logger.log('Init history price job')
       await this.historyPriceService.registerMinorPriceByIsbn();
     });
     this.schedulerRegistry.addCronJob(HistoryPriceService.name, jobHistoryPrice);
@@ -88,7 +91,7 @@ export class ScheduleService implements OnModuleInit {
 
   registerCronCrisol() {
     const initHour = parseInt(this.initHour);
-    const jobCrisol = new CronJob(`25 ${initHour} * * *`, async () => {
+    const jobCrisol = new CronJob(`${this.initMinute} ${initHour} * * *`, async () => {
       this.logger.log('Init Crisol Job');
       await this.crisolService.scrapperCrisol();
       this.logger.log('Finalized crisol Job');
@@ -99,7 +102,7 @@ export class ScheduleService implements OnModuleInit {
 
   registerCronIbero() {
     const initHour = parseInt(this.initHour) + 1;
-    const jobIbero = new CronJob(`25 ${initHour} * * *`, async () => {
+    const jobIbero = new CronJob(`${this.initMinute} ${initHour} * * *`, async () => {
       this.logger.log('Init Ibero Job');
       await this.iberoService.scrapperIbero();
     });
@@ -109,7 +112,7 @@ export class ScheduleService implements OnModuleInit {
 
   registerCronJobVyddistribuidores() {
     const initHour = parseInt(this.initHour) + 2;
-    const jobVyddistribuidores = new CronJob(`25 ${initHour} * * *`, async () => {
+    const jobVyddistribuidores = new CronJob(`${this.initMinute} ${initHour} * * *`, async () => {
       this.logger.log('Init Vyddistribuidores Job');
       await this.vyddistribuidoresService.scrapperVyddistribuidores();
     });
@@ -119,7 +122,7 @@ export class ScheduleService implements OnModuleInit {
 
   registerCronCommunitas() {
     const initHour = parseInt(this.initHour) + 3;
-    const jobCommunitas = new CronJob(`25 ${initHour} * * *`, async () => {
+    const jobCommunitas = new CronJob(`${this.initMinute} ${initHour} * * *`, async () => {
       await this.communitasService.scrapperCommunitas();
     });
     this.schedulerRegistry.addCronJob(CommunitasService.name, jobCommunitas);
@@ -128,7 +131,7 @@ export class ScheduleService implements OnModuleInit {
 
   async cleanPriceNull() {
     const initHour = parseInt(this.initHour) + 4;
-    const jobCleanPriceNull = new CronJob(`00 ${initHour} * * *`, async () => {
+    const jobCleanPriceNull = new CronJob(`${this.initMinute} ${initHour} * * *`, async () => {
       this.logger.log('Init Clean Price Null Job');
       await this.bookDetailService.clearPriceNull();
     });
