@@ -111,8 +111,8 @@ export class VyddistribuidoresService {
       for (const book of listBooks) {
         listCreateNewBook.push(this.bookService.createNewBookService(book));
       }
-      const result = Promise.all(listCreateNewBook);
-      this.logger.log({ message: 'Register Data Of vyddistribuidores', data: result });
+      await Promise.all(listCreateNewBook);
+      this.logger.log({ message: 'Register Data Of vyddistribuidores', data: listBooks });
     } catch (error) {
       this.logger.error('Error registering data');
       this.logger.error(error);
