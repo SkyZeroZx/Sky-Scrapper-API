@@ -1,0 +1,5 @@
+export enum USER_STATUS {
+  CREATED = 'CREATED',
+  ENABLED = 'ENABLED',
+  BLOCKED = 'BLOCKED',
+}
