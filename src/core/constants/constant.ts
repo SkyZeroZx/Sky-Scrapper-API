@@ -4,6 +4,12 @@ export const MSG_OK = 'OK';
 export const JWT_TOKEN ='JWT_TOKEN'
 
 
+export const SCRAPPER_HOUR_INIT = 'SCRAPPER_HOUR_INIT'
+
+export const SCRAPPER_HOUR_NOTIFICATION = 'SCRAPPER_HOUR_NOTIFICATION'
+
+export const SCRAPPER_INIT = 'SCRAPPER_INIT'
+
 
 // we can block by resrouce type like fonts, images etc.
 export const BLOCK_RESOURCE_TYPE: readonly string[] = [
