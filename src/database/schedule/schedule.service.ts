@@ -50,6 +50,11 @@ export class ScheduleService implements OnModuleInit {
     }
   }
 
+  async getIbero(){
+   return await this.iberoService.getDataViaPuppeteer()
+  }
+
+
   initCronJobs() {
     this.registerJobNotifications();
     this.registerCronCrisol();
