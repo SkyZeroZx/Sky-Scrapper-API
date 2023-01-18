@@ -18,7 +18,7 @@ async function bootstrap() {
   app.use(cors());
   app.use(helmet());
   app.use(helmet.hidePoweredBy());
-  
+
   await app.listen(process.env.PORT || 3000);
   webpush();
   logger.log(`Server Listening : ${await app.getUrl()}`);

@@ -51,7 +51,7 @@ export class ScheduleService implements OnModuleInit {
   }
 
   async runPriceVariance() {
-    return  this.vyddistribuidoresService.getDataViaPuppeteer('11');
+    return this.vyddistribuidoresService.getDataViaPuppeteer('11');
   }
 
   initCronJobs() {
@@ -65,7 +65,7 @@ export class ScheduleService implements OnModuleInit {
   }
 
   registerJobNotifications() {
-    const registerSyncJob = new CronJob(`10 ${this.notificationHour} * * *`, async () => {
+    const registerSyncJob = new CronJob(`${this.initMinute} ${this.notificationHour} * * *`, async () => {
       this.logger.log('Init notification job');
       await this.priceVariance();
       this.logger.log('Finalized notification job');
@@ -75,8 +75,8 @@ export class ScheduleService implements OnModuleInit {
   }
 
   async registerHistoryPrice() {
-    const hourRegisterPrice = parseInt(this.initHour) + 5;
-    const jobHistoryPrice = new CronJob(`00 ${hourRegisterPrice} * * *`, async () => {
+    const hourRegisterPrice = parseInt(this.initHour) + 4;
+    const jobHistoryPrice = new CronJob(`${this.initMinute} ${hourRegisterPrice} * * *`, async () => {
       this.logger.log('Init history price job');
       await this.historyPriceService.registerMinorPriceByIsbn();
       this.logger.log('Finalized history price job');
@@ -130,6 +130,17 @@ export class ScheduleService implements OnModuleInit {
     jobVyddistribuidores.start();
   }
 
+  async cleanPriceNull() {
+    const initHour = parseInt(this.initHour) + 3;
+    const jobCleanPriceNull = new CronJob(`${this.initMinute} ${initHour} * * *`, async () => {
+      this.logger.log('Init Clean Price Null Job');
+      await this.bookDetailService.clearPriceNull();
+      this.logger.log('Finalized Clean Price Null Job');
+    });
+    this.schedulerRegistry.addCronJob('clean-price-null', jobCleanPriceNull);
+    jobCleanPriceNull.start();
+  }
+
   registerCronCommunitas() {
     const initHour = parseInt(this.initHour) + 3;
     const jobCommunitas = new CronJob(`${this.initMinute} ${initHour} * * *`, async () => {
@@ -139,16 +150,5 @@ export class ScheduleService implements OnModuleInit {
     });
     this.schedulerRegistry.addCronJob(CommunitasService.name, jobCommunitas);
     jobCommunitas.start();
-  }
-
-  async cleanPriceNull() {
-    const initHour = parseInt(this.initHour) + 4;
-    const jobCleanPriceNull = new CronJob(`${this.initMinute} ${initHour} * * *`, async () => {
-      this.logger.log('Init Clean Price Null Job');
-      await this.bookDetailService.clearPriceNull();
-      this.logger.log('Finalized Clean Price Null Job');
-    });
-    this.schedulerRegistry.addCronJob('clean-price-null', jobCleanPriceNull);
-    jobCleanPriceNull.start();
   }
 }
