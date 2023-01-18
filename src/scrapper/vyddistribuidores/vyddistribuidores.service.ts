@@ -43,13 +43,18 @@ export class VyddistribuidoresService {
       document.querySelectorAll('li.product  > div.product-inner').forEach((z) => {
         const parent = 'a >';
         const shop = 'Vyddistribuidores';
+        let originalPrice = z
+          .querySelector(`${parent} .product-price-box > .price > .woocommerce-Price-amount > bdi `)
+          ?.textContent.substring(2);
+        const elementDiscontPrice = `${parent}  .product-price-box > .price > ins > span > bdi`;
+        // In case originalPrice have a discount price
+        if (!originalPrice) {
+          originalPrice = z.querySelector(elementDiscontPrice)?.textContent.substring(2);
+        }
+
         const book: IBook = {
           title: z.querySelector(`${parent} div.product-price-box > h2`)?.textContent.trim(),
-          price: +z
-            .querySelector(
-              `${parent} .product-price-box > .price > .woocommerce-Price-amount > bdi `,
-            )
-            ?.textContent.substring(2),
+          price: +originalPrice,
           author: null,
           category: 'Manga',
           linkProduct: z.querySelector('a')?.href,

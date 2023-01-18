@@ -50,9 +50,8 @@ export class ScheduleService implements OnModuleInit {
     }
   }
 
-  async scrapperCommunitas() {
-    const listIsbnVariation = await this.historyPriceService.getVariationPriceIsbn();
-    return listIsbnVariation;
+  async runPriceVariance() {
+    return  this.vyddistribuidoresService.getDataViaPuppeteer('11');
   }
 
   initCronJobs() {
@@ -67,7 +66,9 @@ export class ScheduleService implements OnModuleInit {
 
   registerJobNotifications() {
     const registerSyncJob = new CronJob(`10 ${this.notificationHour} * * *`, async () => {
+      this.logger.log('Init notification job');
       await this.priceVariance();
+      this.logger.log('Finalized notification job');
     });
     this.schedulerRegistry.addCronJob('remeberNotification', registerSyncJob);
     registerSyncJob.start();

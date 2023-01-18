@@ -45,9 +45,17 @@ export class CrisolService {
         const parentPrice = 'div.list-view > div.price-box  > span.price-container > span >';
         const parentAvariable =
           'div.product-item-inner > div.product > div.actions-primary > div.unavailable > ';
+        const elementDiscontPrice =
+          'div.list-view > div.price-box  > span.special-price > span.price-container > span > span.price';
+        let originalPrice = z.querySelector(`${parentPrice} .price`)?.textContent.substring(3);
+        // In case originalPrice have a discount price
+        if (!originalPrice) {
+          originalPrice = z.querySelector(elementDiscontPrice)?.textContent.substring(3);
+        }
+
         const book: IBook = {
           title: z.querySelector(`${parent} strong.product`)?.textContent.trim(),
-          price: +z.querySelector(`${parentPrice} .price`)?.textContent.substring(3),
+          price: +originalPrice,
           author: z.querySelector(`${parent} .author`)?.textContent.trim(),
           category: 'Manga',
           linkProduct: z.querySelector(`${parent} a.product`)?.['href'],
@@ -95,7 +103,7 @@ export class CrisolService {
       for (let i = 0; i < numberOfPage; i++) {
         await this.registerDataOfCrisol(i);
       }
-      
+
       this.logger.log('Finalized scrapper Crisol');
     } catch (error) {
       this.logger.error('Error in Scrapper Communitas');
@@ -118,5 +126,4 @@ export class CrisolService {
       this.logger.error(error);
     }
   }
- 
 }
