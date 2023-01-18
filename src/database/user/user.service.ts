@@ -101,14 +101,13 @@ export class UserService {
   async removeListWithToUser(removeItem: ListWish, user: User): Promise<Response> {
     try {
       this.logger.log({ message: 'Removing items of list wish', info: { removeItem, user } });
-      await this.userModel
-        .updateOne(
-          {
-            email: user.email,
-          },
-          { $pull: { listWish: { $eq: removeItem._id } } },
-        )
-        .exec();
+      await this.userModel.updateOne(
+        {
+          email: user.email,
+        },
+        { $pull: { listWish: { $eq: removeItem._id } } },
+      );
+
       return { message: MSG_OK, info: 'Item List Wish removed successfully' };
     } catch (error) {
       this.logger.error({ message: 'Error removing user of list wish', error });

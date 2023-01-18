@@ -4,14 +4,18 @@ import puppeteer from 'puppeteer';
 
 import { IBook } from '@core/interface';
 import { puppeteerLaunchOptions, userAgentOptions } from '@core/config';
-import { SHOPS } from '@core/constants';
+import { PUPPETEER_TIMEOUT, SHOPS } from '@core/constants';
 import { Book, BookService } from '../../database';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class CommunitasService {
   private readonly logger = new Logger(CommunitasService.name);
 
-  constructor(private readonly bookService: BookService) {}
+  constructor(
+    private readonly bookService: BookService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async getDataViaPuppeteer(location: string | number = ''): Promise<IBook[]> {
     const URL = `https://www.communitas.pe/es/18940-manga?p=${location}`;
@@ -33,6 +37,7 @@ export class CommunitasService {
     await page.setUserAgent(userAgent);
 
     await page.goto(URL, {
+      timeout: this.configService.get<number>(PUPPETEER_TIMEOUT),
       waitUntil: 'networkidle2',
     });
 
@@ -93,9 +98,10 @@ export class CommunitasService {
         await this.registerDataOfCommunitas(i);
       }
     } catch (error) {
-      this.logger.error('Error in Scrapper Communitas');
-      this.logger.error(error);
-      throw new Error('Error Scrapping Communitas Mangas');
+      this.logger.error({
+        message: 'Error registering data',
+        page: { message: `Error in page ${location}` },
+      });
     }
   }
 

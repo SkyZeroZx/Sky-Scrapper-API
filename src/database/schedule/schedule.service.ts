@@ -51,7 +51,7 @@ export class ScheduleService implements OnModuleInit {
   }
 
   async runPriceVariance() {
-    return this.vyddistribuidoresService.getDataViaPuppeteer('11');
+    return await this.vyddistribuidoresService.getDataViaPuppeteer()
   }
 
   initCronJobs() {

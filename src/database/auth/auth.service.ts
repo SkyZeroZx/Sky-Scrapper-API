@@ -156,7 +156,6 @@ export class AuthService {
             upsert: true,
           },
         )
-        .exec();
     } catch (error) {
       this.logger.error({ message: 'Error registering challenge', error });
       throw new InternalServerErrorException('Error registering challenge');

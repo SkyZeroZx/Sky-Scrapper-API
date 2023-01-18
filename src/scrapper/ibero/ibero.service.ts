@@ -1,15 +1,19 @@
 import { Injectable, Logger } from '@nestjs/common';
 import UserAgent from 'user-agents';
 import puppeteer from 'puppeteer';
-import { BLOCK_RESOURCE_TYPE, BLOCK_SOURCE_NAME } from '@core/constants';
+import { BLOCK_RESOURCE_TYPE, BLOCK_SOURCE_NAME, PUPPETEER_TIMEOUT } from '@core/constants';
 import { puppeteerLaunchOptions, userAgentOptions } from '@core/config';
 import { IBook } from '@core/interface';
 import { Book, BookService } from '../../database';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class IberoService {
   private readonly logger = new Logger(IberoService.name);
-  constructor(private readonly bookService: BookService) {}
+  constructor(
+    private readonly bookService: BookService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async getDataViaPuppeteer(location: string | number = '1') {
     const URL = `https://www.iberolibrerias.com/comics-y-mangas?page=${location}`;
@@ -34,6 +38,7 @@ export class IberoService {
     await page.setUserAgent(userAgent);
 
     await page.goto(URL, {
+      timeout: this.configService.get<number>(PUPPETEER_TIMEOUT),
       waitUntil: 'networkidle2',
     });
 
@@ -101,7 +106,10 @@ export class IberoService {
       await Promise.all(listCreateNewBook);
       this.logger.log({ message: 'Register Data Of Ibero', data: listBooks });
     } catch (error) {
-      this.logger.error('Error registering data');
+      this.logger.error({
+        message: 'Error registering data',
+        page: { message: `Error in page ${location}` },
+      });
       this.logger.error(error);
     }
   }

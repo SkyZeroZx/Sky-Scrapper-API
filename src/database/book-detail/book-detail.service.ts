@@ -25,31 +25,29 @@ export class BookDetailService {
 
   async findByMultiIsbn(listIsbn: string[]) {
     try {
-      return this.bookDetailModel
-        .aggregate([
-          { $match: { isbn: { $in: listIsbn } } },
-          {
-            $group: {
-              _id: '$isbn',
-              price: { $min: '$price' },
-              title: {
-                $first: '$title',
-              },
-              isbn: {
-                $first: '$isbn',
-              },
-              image: {
-                $first: '$image',
-              },
+      return this.bookDetailModel.aggregate([
+        { $match: { isbn: { $in: listIsbn } } },
+        {
+          $group: {
+            _id: '$isbn',
+            price: { $min: '$price' },
+            title: {
+              $first: '$title',
+            },
+            isbn: {
+              $first: '$isbn',
+            },
+            image: {
+              $first: '$image',
             },
           },
-          {
-            $project: {
-              _id: 0,
-            },
+        },
+        {
+          $project: {
+            _id: 0,
           },
-        ])
-        .exec();
+        },
+      ]);
     } catch (error) {
       this.logger.error(error);
       throw new InternalServerErrorException('Error while searching multi isbn');
@@ -57,48 +55,42 @@ export class BookDetailService {
   }
 
   async findBookByIsbn(isbn: string): Promise<BookDetail[]> {
-    const listBookDetail = await this.bookDetailModel
-      .find(
-        {
-          isbn,
-        },
-        {
-          _id: 0,
-          __v: 0,
-        },
-        {
-          sort: { price: 1 },
-        },
-      )
-      .exec();
+    const listBookDetail = await this.bookDetailModel.find(
+      {
+        isbn,
+      },
+      {
+        _id: 0,
+        __v: 0,
+      },
+      {
+        sort: { price: 1 },
+      },
+    );
     return listBookDetail;
   }
 
   async createBookDetail(book: IBook): Promise<BookDetail> {
     try {
-      const newBook = await this.bookDetailModel
-        .findOneAndUpdate(
-          {
-            isbn: book.isbn,
-            linkProduct: book.linkProduct,
-            editorial: book.editorial,
-            price: book.price,
-          },
-          {
-            isbn: book.isbn,
-            title: book.title,
-            author: book.author,
-            shop: book.shop,
-            price: book.price,
-            linkProduct: book.linkProduct,
-            isAvailable: book.isAvailable,
-            image: book.image,
-            category: book.category,
-            editorial: book.editorial,
-          },
-          { new: true, upsert: true },
-        )
-        .exec();
+      const newBook = await this.bookDetailModel.findOneAndUpdate(
+        {
+          isbn: book.isbn,
+          shop: book.shop,
+        },
+        {
+          isbn: book.isbn,
+          title: book.title,
+          author: book.author,
+          shop: book.shop,
+          price: book.price,
+          linkProduct: book.linkProduct,
+          isAvailable: book.isAvailable,
+          image: book.image,
+          category: book.category,
+          editorial: book.editorial,
+        },
+        { upsert: true },
+      );
 
       return newBook;
     } catch (error) {

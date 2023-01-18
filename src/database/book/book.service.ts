@@ -18,21 +18,19 @@ export class BookService {
   async createNewBookService(book: IBook): Promise<Book> {
     try {
       const createBookDetail = await this.bookDetailService.createBookDetail(book);
-      const create = await this.bookModel
-        .findOneAndUpdate(
-          {
-            isbn: book.isbn,
-          },
-          {
-            isbn: book.isbn,
-            image: book.image,
-            $addToSet: { bookDetail: createBookDetail },
-          },
-          {
-            upsert: true,
-          },
-        )
-        .exec();
+      const create = await this.bookModel.findOneAndUpdate(
+        {
+          isbn: book.isbn,
+        },
+        {
+          isbn: book.isbn,
+          image: book.image,
+          $addToSet: { bookDetail: createBookDetail },
+        },
+        {
+          upsert: true,
+        },
+      );
       return create;
     } catch (error) {
       this.logger.error('Error creating book');

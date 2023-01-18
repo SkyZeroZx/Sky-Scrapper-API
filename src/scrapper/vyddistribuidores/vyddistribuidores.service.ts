@@ -2,15 +2,18 @@ import { Injectable, Logger } from '@nestjs/common';
 import puppeteer from 'puppeteer';
 import UserAgent from 'user-agents';
 import { puppeteerLaunchOptions, userAgentOptions } from '@core/config';
-import { BLOCK_RESOURCE_TYPE, BLOCK_SOURCE_NAME } from '@core/constants';
+import { BLOCK_RESOURCE_TYPE, BLOCK_SOURCE_NAME, PUPPETEER_TIMEOUT } from '@core/constants';
 import { IBook } from '@core/interface';
-import { Book } from '../../database/book/entities/book.entity';
-import { BookService } from '../../database/book/book.service';
+import { Book, BookService } from '../../database';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class VyddistribuidoresService {
   private readonly logger = new Logger(VyddistribuidoresService.name);
-  constructor(private readonly bookService: BookService) {}
+  constructor(
+    private readonly bookService: BookService,
+    private readonly configService: ConfigService,
+  ) {}
 
   category = 'Manga';
   async getDataViaPuppeteer(location: string | number = '1'): Promise<IBook[]> {
@@ -34,6 +37,7 @@ export class VyddistribuidoresService {
     });
 
     await page.goto(URL, {
+      timeout: this.configService.get<number>(PUPPETEER_TIMEOUT),
       waitUntil: 'networkidle2',
     });
 
@@ -103,9 +107,10 @@ export class VyddistribuidoresService {
         await this.registerDataOfVyDdistribuidores(i);
       }
     } catch (error) {
-      this.logger.error('Error in Scrapper vyddistribuidores');
-      this.logger.error(error);
-      throw new Error('Error Scrapping vyddistribuidores Mangas');
+      this.logger.error({
+        message: 'Error registering data',
+        page: { message: `Error in page ${location}` },
+      });
     }
   }
 
