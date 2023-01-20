@@ -152,7 +152,7 @@ _Las herramientas utilizadas son:_
 - [Prettier](https://prettier.io/) - Formateador de Codigo
 - [TabNine](https://www.tabnine.com/) - Autocompletador de Codigo
 - [Winston](https://github.com/winstonjs/winston) - Logger para NodeJS
-- [WebAuthn](https://webauthn.guide/) - Estándar web del proyecto FIDO2 de la Alianza FIDO
+- [PageSpeed](https://pagespeed.web.dev/) - Plataforma para ayuda de WebSite Performance
 ## Versionado 📌
 
 Usamos [GIT](https://git-scm.com/) para el versionado.
