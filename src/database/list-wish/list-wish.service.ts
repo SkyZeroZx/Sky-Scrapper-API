@@ -28,7 +28,6 @@ export class ListWishService {
         },
       );
       const listIsbn = list.map(({ isbn }) => isbn);
-      console.log(listIsbn);
       return await this.bookDetailService.findByMultiIsbn(listIsbn);
     } catch (error) {
       this.logger.error(error);

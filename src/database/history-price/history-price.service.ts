@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { InternalServerErrorException } from '@nestjs/common/exceptions';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { BookDetailService } from '../book-detail/book-detail.service';
 import { BookService } from '../book/book.service';
 import { HistoryPrice } from './entities/history-price.entity';
 
@@ -12,7 +14,18 @@ export class HistoryPriceService {
     @InjectModel(HistoryPrice.name)
     private readonly historyPriceModel: Model<HistoryPrice>,
     private bookService: BookService,
+    private readonly bookDetailService: BookDetailService,
   ) {}
+
+  async getLastDiscount() {
+    try {
+      const lisIsbnDiscont = await this.getVariationPriceIsbn();
+      return await this.bookDetailService.findByMultiIsbn(lisIsbnDiscont);
+    } catch (error) {
+      this.logger.error({ message: 'Error getting last discount', error });
+      throw new InternalServerErrorException('Error getting last discount');
+    }
+  }
 
   async registerMinorPriceByIsbn() {
     const take = 200;
@@ -54,7 +67,7 @@ export class HistoryPriceService {
             $gte: new Date(
               currentDate.getFullYear(),
               currentDate.getMonth(),
-              currentDate.getDate() - 1,
+              currentDate.getDate() - 5,
             ),
             $lt: new Date(
               currentDate.getFullYear(),

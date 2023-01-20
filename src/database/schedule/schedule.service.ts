@@ -51,7 +51,7 @@ export class ScheduleService implements OnModuleInit {
   }
 
   async runPriceVariance() {
-    return await this.vyddistribuidoresService.getDataViaPuppeteer()
+    return await this.historyPriceService.getVariationPriceIsbn();
   }
 
   initCronJobs() {
@@ -65,22 +65,28 @@ export class ScheduleService implements OnModuleInit {
   }
 
   registerJobNotifications() {
-    const registerSyncJob = new CronJob(`${this.initMinute} ${this.notificationHour} * * *`, async () => {
-      this.logger.log('Init notification job');
-      await this.priceVariance();
-      this.logger.log('Finalized notification job');
-    });
+    const registerSyncJob = new CronJob(
+      `${this.initMinute} ${this.notificationHour} * * *`,
+      async () => {
+        this.logger.log('Init notification job');
+        await this.priceVariance();
+        this.logger.log('Finalized notification job');
+      },
+    );
     this.schedulerRegistry.addCronJob('remeberNotification', registerSyncJob);
     registerSyncJob.start();
   }
 
   async registerHistoryPrice() {
     const hourRegisterPrice = parseInt(this.initHour) + 4;
-    const jobHistoryPrice = new CronJob(`${this.initMinute} ${hourRegisterPrice} * * *`, async () => {
-      this.logger.log('Init history price job');
-      await this.historyPriceService.registerMinorPriceByIsbn();
-      this.logger.log('Finalized history price job');
-    });
+    const jobHistoryPrice = new CronJob(
+      `${this.initMinute} ${hourRegisterPrice} * * *`,
+      async () => {
+        this.logger.log('Init history price job');
+        await this.historyPriceService.registerMinorPriceByIsbn();
+        this.logger.log('Finalized history price job');
+      },
+    );
     this.schedulerRegistry.addCronJob(HistoryPriceService.name, jobHistoryPrice);
     jobHistoryPrice.start();
   }
